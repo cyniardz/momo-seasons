@@ -1,0 +1,9 @@
+.env
+.vercel
+.vscode
+.playwright-mcp
+graphify-out
+img/_unused
+기획안
+.DS_Store
+Thumbs.db

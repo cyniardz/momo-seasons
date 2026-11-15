@@ -1,0 +1,249 @@
+:root{
+  --display:"Pretendard Variable",Pretendard,system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.9,.25,1.08);
+  --wrap:min(1120px,100vw - 48px);
+}
+*{box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{margin:0;font-family:var(--display);word-break:keep-all;-webkit-font-smoothing:antialiased;color:#fff;line-height:1.8;background:#c4426f}
+body{--paper:#f3ebde;--ink:#3b2a22}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
+h1,h2,h3,p,dl,dd,ol,ul,figure{margin:0;padding:0}
+ol,ul{list-style:none}
+a{color:inherit}
+:focus-visible{outline:3px solid #fff;outline-offset:4px;border-radius:12px}
+
+/* ── 무대: 한 화면에 고정, 장면만 바뀜 ── */
+.hero{--pump:1;--spin:0deg;--dir:1;--ring:rgba(255,255,255,.7);
+  --mx:50%;--mt:12svh;--mh:82svh;--gx:50%;--gy:55%;
+  position:fixed;inset:0;overflow:hidden;user-select:none;-webkit-user-select:none}
+/* 소개 장면: 모모가 왼쪽 칸에 정착 */
+.hero[data-scene="1"]{--mx:calc(50% - var(--wrap) / 4);--mt:17svh;--mh:72svh;--gx:calc(50% - var(--wrap) / 4);--gy:56%}
+
+/* 배경 (모든 장면 공통, 계절 색) */
+.bg{position:absolute;inset:0;opacity:0;transition:opacity .9s,transform .9s var(--ease)}
+.hero.pump{--pump:1.38;--spin:-14deg}
+.hero.pump .bg{transform:scale(1.1);transition:opacity .9s,transform .52s ease-out}
+.bg.on{opacity:1}
+.bg-spring{background:radial-gradient(120% 90% at 50% 55%,#ee7fa2 0%,#c4426f 55%,#a8305a 100%)}
+.bg-summer{background:radial-gradient(120% 90% at 50% 55%,#3aa6e8 0%,#1673c9 55%,#0b4f95 100%)}
+.bg-autumn{background:radial-gradient(120% 90% at 50% 55%,#e0873f 0%,#b44f1c 55%,#8c3c13 100%)}
+.bg-winter{background:radial-gradient(120% 90% at 50% 55%,#24805f 0%,#145640 55%,#0a3628 100%)}
+/* 모모 뒤 은은한 밝은 영역 — 모모를 따라 이동 */
+.glow{position:absolute;z-index:1;left:var(--gx);top:var(--gy);width:96svh;height:88svh;transform:translate(-50%,-50%);pointer-events:none;
+  background:radial-gradient(closest-side,rgba(255,255,255,.32),rgba(255,255,255,.12) 55%,rgba(255,255,255,0));
+  transition:left .9s var(--ease),top .9s var(--ease),opacity .6s}
+.hero[data-scene="2"] .glow,.hero[data-scene="3"] .glow,.hero[data-scene="4"] .glow{opacity:.5}
+
+/* 상단 */
+.top{position:absolute;inset:0 0 auto 0;z-index:7;display:flex;flex-direction:column;align-items:center;gap:2px;padding:22px clamp(20px,4vw,60px)}
+.logo{text-decoration:none;font-weight:800;font-size:1.7rem;letter-spacing:-.02em}
+.menu{display:flex;gap:clamp(14px,3vw,44px);font-weight:500;font-size:1rem}
+.menu a{text-decoration:none;padding:6px 2px;opacity:.55;transition:opacity .25s}
+.menu a:hover{opacity:.85}
+.menu a[aria-current="true"]{opacity:1}
+
+/* 떠다니는 요소 */
+.slot{position:absolute;z-index:2;width:0;height:0;transition:left 1s cubic-bezier(.75,0,.2,1.12),top 1s cubic-bezier(.75,0,.2,1.12),transform 1s cubic-bezier(.75,0,.2,1.12),filter .8s}
+.hero.pump .slot{transition:transform .52s ease-out}
+.slot.front{z-index:4}
+.par{position:absolute;transition:transform .25s ease-out}
+.bob{position:relative;width:var(--s);height:var(--s);margin:calc(var(--s)/-2) 0 0 calc(var(--s)/-2);animation:bob var(--d,6s) ease-in-out var(--dl,0s) infinite alternate;transition:width 1s var(--ease),height 1s var(--ease),margin 1s var(--ease)}
+@keyframes bob{from{transform:translateY(-10px) rotate(-8deg)}to{transform:translateY(12px) rotate(8deg)}}
+.bob img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transform:scale(.4) rotate(-30deg);transition:opacity .6s,transform .9s var(--ease);pointer-events:none}
+.bob img.on{opacity:1;transform:none}
+/* 빠지는 오브제: 커지면서 오른쪽으로 돌며 사라짐 */
+.bob img.out{opacity:0;transform:scale(1.35) rotate(45deg);transition:opacity .7s ease-in,transform .8s ease-in}
+
+/* 모모 — 장면이 바뀌면 위로 날아갔다가 새 자리로 떨어짐 */
+.momo{position:absolute;z-index:3;left:var(--mx);top:var(--mt);height:var(--mh);aspect-ratio:496/425;transform:translateX(-50%);pointer-events:none;transition:transform .45s cubic-bezier(.55,0,.9,.45)}
+.momo.fly{transform:translate(-50%,-160svh)}
+.momo.land{transition:transform .85s cubic-bezier(.3,1.35,.55,1)}
+.shadow{position:absolute;left:50%;top:84.2%;width:26%;height:5%;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(20,10,30,.38),rgba(20,10,30,0));filter:blur(4px)}
+.momo-hop{position:absolute;inset:0}
+.momo-hop.hop{animation:hop .55s cubic-bezier(.3,.7,.4,1)}
+@keyframes hop{0%,100%{transform:translateY(0) scale(1)}15%{transform:translateY(0) scale(1.04,.94)}45%{transform:translateY(-7%) scale(.97,1.04)}80%{transform:translateY(0) scale(1.03,.96)}}
+.momo-shift{position:absolute;inset:0;transform-origin:50% 84%;transition:transform 1.2s var(--ease)}
+.hero.pump .momo-shift{transform:translateX(calc(var(--dir) * -7%)) rotate(calc(var(--dir) * -5deg));transition:transform .52s ease-out}
+.momo img{position:absolute;inset:0;width:100%;height:100%;opacity:0}
+.momo img.on{opacity:1}
+/* 새 모모가 들어오는 순간 이전 모모는 바로 사라짐 */
+.momo img.leave{animation:leave .12s ease-in forwards}
+.momo img.enter{animation:enter .8s var(--ease) both}
+@keyframes leave{from{opacity:1}to{opacity:0}}
+@keyframes enter{from{opacity:0;transform:translateX(calc(var(--dir) * -48%)) scale(.95);filter:blur(10px)}to{opacity:1;transform:none;filter:blur(0)}}
+.hit{position:absolute;z-index:6;left:var(--mx);top:calc(var(--mt) + var(--mh)*.2);height:calc(var(--mh)*.66);aspect-ratio:3/4;transform:translateX(-50%);border-radius:40%}
+.hero:not([data-scene="0"]) .hit{display:none}
+
+/* ── 장면 ── */
+.scene{position:absolute;inset:0;z-index:5;display:flex;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:130px 0 40px;
+  opacity:0;visibility:hidden;transform:translateY(calc(var(--sd,1) * 36px));
+  transition:opacity .4s,transform .4s,visibility 0s .4s}
+.scene.on{opacity:1;visibility:visible;transform:none;transition:opacity .55s .4s,transform .7s .4s var(--ease),visibility 0s}
+.scene > .wrap{margin:auto;width:var(--wrap)}
+.scene h2{font-weight:800;letter-spacing:-.03em;font-size:clamp(2rem,4vw,3.2rem);line-height:1.2}
+.lead{margin-top:12px;font-size:1.05rem;max-width:32em}
+
+/* 장면 0: 히어로 UI (모모 클릭이 통과되도록) */
+.scene-hero{padding:0;display:block;overflow:hidden;pointer-events:none}
+.scene-hero .arrow,.scene-hero .dots{pointer-events:auto}
+/* 문구: 제목은 모모 왼쪽 머리 높이, 설명은 오른쪽 발 높이 (곰 몸 반폭 ≈ 22svh, 여백 10svh) */
+.copy{position:absolute;inset:0;transition:opacity .4s,transform .4s}
+.copy.out{opacity:0;transform:translateY(14px)}
+/* 글 길이만큼만 폭을 잡고 왼쪽 정렬 → 계절 이름이 한마디의 시작점에 맞음 */
+.copy-head{position:absolute;right:calc(50% + 32svh);top:calc(var(--mt) + var(--mh) * .22);width:max-content;max-width:min(340px,calc(50% - 32svh - 140px));text-align:left}
+.copy .desc{position:absolute;left:calc(50% + 32svh);bottom:calc(100% - var(--mt) - var(--mh) * .85);width:min(300px,calc(50% - 32svh - 140px))}
+.copy h1{font-weight:800;font-size:clamp(3rem,6vw,5.5rem);line-height:1;letter-spacing:-.03em}
+.copy .say{font-weight:600;font-size:clamp(1.1rem,1.6vw,1.45rem);margin-top:14px;line-height:1.4;letter-spacing:-.01em}
+.copy .desc{font-size:1.02rem;line-height:1.75;opacity:.92}
+.arrow{position:absolute;top:50%;width:clamp(52px,5.4vw,84px);aspect-ratio:1;border-radius:50%;border:2px solid var(--ring);display:grid;place-items:center;transform:translateY(-50%);transition:transform .2s,background-color .2s}
+.arrow:hover{background:rgba(255,255,255,.2);transform:translateY(-50%) scale(1.08)}
+.arrow:active{transform:translateY(-50%) scale(.94)}
+.arrow svg{width:34%;height:34%}
+.prev{left:clamp(14px,2.6vw,44px)}
+.next{right:clamp(14px,2.6vw,44px)}
+.dots{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);display:flex;gap:12px}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid #fff;opacity:.6;transition:opacity .3s,background-color .3s,transform .3s}
+.dot[aria-pressed="true"]{background:#fff;opacity:1;transform:scale(1.25)}
+
+/* 장면 1: 소개 — 왼쪽 칸은 모모 자리 */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,64px);align-items:center}
+.profile{margin-top:20px;border-top:2px solid currentColor}
+.profile div{display:grid;grid-template-columns:7em 1fr;gap:12px;padding:9px 2px;border-bottom:1px solid rgba(255,255,255,.3);font-size:.95rem}
+.profile dt{font-weight:600}
+.sub{margin-top:26px;font-weight:700;font-size:1.05rem}
+.feat-list{margin-top:12px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+/* 특징 원본 360px → 88px 표시라 선명 */
+.feat img{width:100%;max-width:88px;aspect-ratio:1;object-fit:cover;border-radius:50%;display:block;box-shadow:0 0 0 4px rgba(255,255,255,.55)}
+.feat h3{font-weight:700;font-size:.98rem;margin-top:10px}
+.feat p{font-size:.84rem;line-height:1.5;opacity:.9}
+
+/* 장면 2: 굿즈 — 원본 270~415px라 한 줄 6개(카드 폭 약 170px)로 선명하게 */
+.goods-list{margin-top:32px;display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.good img{width:100%;aspect-ratio:270/220;object-fit:cover;border-radius:16px;display:block;background:var(--paper)}
+.good h3{font-weight:700;font-size:1rem;margin-top:8px}
+.good p{font-size:.86rem;line-height:1.45;opacity:.85}
+
+/* 장면 3: 갤러리 — 왼쪽 포즈 8장, 오른쪽 인스타 피드 */
+.gal-wrap{display:grid;grid-template-columns:1fr 380px;gap:clamp(28px,4vw,64px);align-items:center}
+.gal{margin-top:28px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:540px}
+
+/* 인스타그램 프로필 미리보기 */
+.ig{background:#fff;color:#111;border-radius:28px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.25);height:min(660px,calc(100svh - 170px));display:flex;flex-direction:column;line-height:1.4}
+.ig a{text-decoration:none}
+.ig-bar{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 10px;border-bottom:1px solid #efefef;font-size:.95rem}
+.ig-bar a{font-size:.75rem;color:#0095f6;font-weight:600}
+.ig-scroll{flex:1;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.ig-head{display:flex;align-items:center;gap:16px;padding:14px 16px 0}
+/* 스토리 링 = 사계절 색 */
+.ig-ring{flex:none;width:76px;height:76px;border-radius:50%;padding:3px;background:conic-gradient(#c4426f 0 25%,#1673c9 0 50%,#b44f1c 0 75%,#145640 0)}
+.ig-ring img{width:100%;height:100%;border-radius:50%;border:3px solid #fff;object-fit:cover;display:block}
+.ig-name{font-weight:700;font-size:.9rem}
+.ig-meta{font-size:.82rem;color:#555;margin-top:2px}
+.ig-bio{padding:10px 16px 0;font-size:.82rem;color:#222}
+.ig-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:12px 16px 0}
+.ig-btns a{text-align:center;padding:6px 0;border-radius:8px;background:#efefef;font-weight:600;font-size:.82rem;color:#111}
+.ig-btns .ig-follow{background:#0095f6;color:#fff}
+.ig-hl{display:flex;gap:14px;padding:14px 16px 10px;font-size:.7rem;text-align:center;color:#222}
+.ig-hl li{display:grid;justify-items:center;gap:4px}
+.ig-hl span{width:54px;height:54px;border-radius:50%;padding:2px;background:#ddd;display:grid;place-items:center;overflow:hidden;box-shadow:inset 0 0 0 2px #fff}
+.ig-hl span{background:var(--g)}
+.ig-hl img{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid #fff;background:#fff}
+.ig-hl img.sp{object-fit:contain;padding:6px;background:#fff6f8}
+.ig-hl b{color:#fff;font-size:.8rem}
+.ig-tab{display:grid;place-items:center;padding:8px 0;border-top:1px solid #efefef;border-bottom:2px solid #111;width:33.4%}
+.ig-tab svg{width:20px;height:20px}
+
+/* 줄맞춤 피드: 한 줄(3칸)이 하나의 색 띠로 이어짐. 타일 비율 3:4 */
+.ig-grid{display:grid;gap:2px}
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.r-pin{--g:linear-gradient(90deg,#f8f1e7,#efe3d0 55%,#e3d0b6);color:#3b2a22}
+.r-spring{--g:linear-gradient(90deg,#f39bb7,#c4426f 55%,#a8305a)}
+.r-summer{--g:linear-gradient(90deg,#5ab8f0,#1673c9 55%,#0b4f95)}
+.r-autumn{--g:linear-gradient(90deg,#ea9a55,#b44f1c 55%,#8c3c13)}
+.r-winter{--g:linear-gradient(90deg,#3a9a76,#145640 55%,#0a3628)}
+.t{position:relative;aspect-ratio:3/4;overflow:hidden;background:var(--g);background-size:300% 100%;color:#fff}
+.t:nth-child(1){background-position:0 0}
+.t:nth-child(2){background-position:50% 0}
+.t:nth-child(3){background-position:100% 0}
+.t .photo{width:100%;height:100%;object-fit:cover;display:block}
+.t .cut{position:absolute;left:50%;bottom:-6%;width:190%;max-width:none;transform:translateX(-50%)}
+.t button{position:absolute;inset:0;width:100%}
+.t button:hover{background:rgba(255,255,255,.12)}
+.txt{display:flex;flex-direction:column;justify-content:center;padding:0 10px;line-height:1.15}
+.txt b{font-weight:800;font-size:1.5rem;letter-spacing:-.03em}
+.txt small{font-size:.58rem;letter-spacing:.18em;opacity:.8;margin-top:4px}
+.txt span{font-size:.72rem;font-weight:600;margin-top:10px;line-height:1.35}
+.r-pin .t{color:#3b2a22}
+.r-pin .txt b{font-size:1.05rem}
+.obj{display:grid;place-items:center;align-content:center;gap:6px}
+.obj img{width:62%;filter:drop-shadow(0 4px 6px rgba(0,0,0,.2))}
+.obj span{font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.22)}
+.t em{position:absolute;left:6px;bottom:6px;font-style:normal;font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.9);color:#3b2a22}
+/* 고정 게시물 핀 */
+.pin::after{content:"";position:absolute;top:6px;right:6px;width:14px;height:14px;background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16 3l5 5-3 1-4 4 1 5-2 2-4-4-5 5-1-1 5-5-4-4 2-2 5 1 4-4z'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16 3l5 5-3 1-4 4 1 5-2 2-4-4-5 5-1-1 5-5-4-4 2-2 5 1 4-4z'/%3E%3C/svg%3E") center/contain no-repeat}
+.r-pin .t:nth-child(3).pin::after{color:#fff}
+.gal figure{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:496/425}
+.gal img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s var(--ease)}
+.gal figure:hover img{transform:scale(1.05)}
+.gal button{position:absolute;inset:0;width:100%;border-radius:16px;text-align:left}
+.gal button span{position:absolute;left:8px;bottom:8px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.92);color:var(--ink);font-weight:600;font-size:.78rem}
+
+/* 장면 4: 이야기 + 마무리 */
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,6vw,90px);align-items:start}
+.year{border-left:2px solid currentColor;padding-left:28px;display:grid;gap:20px}
+.year li{position:relative}
+.year li::before{content:"";position:absolute;left:-36px;top:.55em;width:14px;height:14px;border-radius:50%;background:var(--c);border:2px solid #fff}
+.year h3{font-weight:700;font-size:1.2rem}
+.year p{font-size:.95rem}
+.end{margin-top:clamp(36px,6svh,64px);padding-top:18px;border-top:1px solid rgba(255,255,255,.3);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;font-size:.9rem}
+.follow{padding:10px 20px;border-radius:999px;background:var(--paper);color:var(--ink);text-decoration:none;font-weight:700;transition:transform .2s}
+.follow:hover{transform:translateY(-2px)}
+.fine{opacity:.75}
+
+@media (max-width:860px){
+  .hero{--mt:10svh;--mh:62svh;--gy:43%}
+  .hero[data-scene="1"]{--mx:50%;--mt:7.5svh;--mh:39svh;--gx:50%;--gy:28%}
+  .top{padding:14px 16px}
+  .logo{font-size:1.5rem}
+  .menu{font-size:.95rem;gap:18px}
+  .scene{padding-top:110px}
+  .copy-head{right:auto;left:50%;top:auto;bottom:48px;transform:translateX(-50%);width:min(86vw,420px);max-width:none;text-align:center}
+  .copy h1{font-size:3.4rem}
+  .copy .say{margin-top:4px}
+  .copy .desc{display:none}
+  .arrow{top:44%}
+  .dots{bottom:16px}
+  .about-grid,.story-grid{grid-template-columns:1fr}
+  .about-grid > .spacer{height:28svh}
+  .feat-list,.goods-list{grid-template-columns:repeat(2,1fr)}
+  .gal-wrap{grid-template-columns:1fr}
+  .ig{height:auto}
+  .ig-scroll{overflow:visible}   /* 휴대폰은 장면 전체가 스크롤 */
+}
+@media (prefers-reduced-motion:reduce){
+  .bob{animation:none}
+  .slot,.bob,.bob img,.copy,.bg,.momo,.momo-shift,.glow,.scene,.scene.on{transition-duration:.01s;transition-delay:0s}
+  .momo-hop.hop{animation:none}
+}
+/* 피드·사진첩: 지금 계절 것만 보이기 */
+.hero:not([data-season="spring"]) :is(.r-spring,.s-spring),.hero:not([data-season="summer"]) :is(.r-summer,.s-summer),
+.hero:not([data-season="autumn"]) :is(.r-autumn,.s-autumn),.hero:not([data-season="winter"]) :is(.r-winter,.s-winter){display:none}
+
+/* 지금 계절 모모를 부분 확대 (momo-*.png 네 장은 구도가 같아 위치 하나로 공유) */
+.hero[data-season="spring"]{--momo:url(img/spring/momo-spring.png);--obj:url(img/spring/spring-0.png)}
+.hero[data-season="summer"]{--momo:url(img/summer/momo-summer.png);--obj:url(img/summer/summer-0.png)}
+.hero[data-season="autumn"]{--momo:url(img/autumn/momo-autumn.png);--obj:url(img/autumn/autumn-0.png)}
+.hero[data-season="winter"]{--momo:url(img/winter/momo-winter.png);--obj:url(img/winter/winter-4.png)}
+.mz{display:block;background:#fbf6ef var(--momo) no-repeat;border-radius:50%;transition:background-image .4s}
+.mz-bonnet{background-size:285%;background-position:50% 16%}
+.mz-face{background-size:400%;background-position:50% 39%}
+.mz-bow{background-size:550%;background-position:48% 53%}
+.mz-feet{background-size:330%;background-position:48% 95%}
+.feat .mz{width:100%;max-width:88px;aspect-ratio:1;box-shadow:0 0 0 4px rgba(255,255,255,.55)}
+.ig-ring .mz{width:100%;height:100%;border:3px solid #fff}
+.ig-hl .mz{width:46px;height:46px;border:2px solid #fff}
+.ig-hl .sp{width:46px;height:46px;border-radius:50%;border:2px solid #fff;background:#fff var(--obj) center/70% no-repeat}
+.t .mz-body{position:absolute;inset:0;border-radius:0;background-color:transparent;background-size:auto 135%;background-position:50% 65%}
