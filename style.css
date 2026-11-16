@@ -119,7 +119,7 @@ a{color:inherit}
 .feat p{font-size:.84rem;line-height:1.5;opacity:.9}
 
 /* 장면 2: 굿즈 — 원본 270~415px라 한 줄 6개(카드 폭 약 170px)로 선명하게 */
-.goods-list{margin-top:32px;display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.goods-list{margin-top:32px;display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
 .good img{width:100%;aspect-ratio:270/220;object-fit:cover;border-radius:16px;display:block;background:var(--paper)}
 .good h3{font-weight:700;font-size:1rem;margin-top:8px}
 .good p{font-size:.86rem;line-height:1.45;opacity:.85}
