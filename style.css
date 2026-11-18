@@ -6,7 +6,7 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;font-family:var(--display);word-break:keep-all;-webkit-font-smoothing:antialiased;color:#fff;line-height:1.8;background:var(--season);transition:background-color .9s}
-body{--paper:#f3ebde;--ink:#3b2a22;--season:#a3232b;--edge:color-mix(in srgb,var(--season),#000 10%)}
+body{--paper:#f3ebde;--ink:#3b2a22;--season:#a3232b;--edge:rgba(0,0,0,.1)}
 button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
 h1,h2,h3,p,dl,dd,ol,ul,figure{margin:0;padding:0}
 ol,ul{list-style:none}
@@ -41,9 +41,11 @@ a{color:inherit}
 /* ── 첫 무대: 한 화면, 장면만 바뀜 (마지막 장면 뒤로는 페이지 스크롤) ── */
 .hero{--pump:1;--spin:0deg;--dir:1;--ring:rgba(255,255,255,.7);
   --mx:50%;--mt:12svh;--mh:82svh;--gx:50%;--gy:55%;
-  position:relative;z-index:1;height:100svh;overflow:hidden;user-select:none;-webkit-user-select:none}
+  position:relative;z-index:1;margin-top:-2px;height:100svh;overflow:hidden;user-select:none;-webkit-user-select:none}
 /* 인트로 모모가 내려와 이 자리에 닿기 전까지는 첫 무대 모모를 숨김 (닿으면 바꿔치기) */
 .hero:not(.ready) .momo{visibility:hidden}
+/* 도착한 뒤엔 첫 무대가 인트로 위에 그려져, 스크롤이 소수점에서 멈춰도 위쪽에 인트로 끝선이 비치지 않게 (위로 2px 겹침) */
+.hero.ready{z-index:3}
 /* 위 인트로·아래 인스타그램과 같은 색(--edge)에서 만나도록 위아래를 살짝 어둡게 */
 .hero::before{content:"";position:absolute;left:0;right:0;top:0;height:22%;z-index:1;pointer-events:none;background:linear-gradient(var(--edge),transparent)}
 .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22%;z-index:1;pointer-events:none;background:linear-gradient(transparent,var(--edge))}
@@ -195,7 +197,7 @@ a{color:inherit}
 
 /* ── 인스타그램 구간: 이 높이만큼 스크롤하는 동안 무대는 화면에 고정 ── */
 .insta{height:440svh;position:relative}
-.stage{position:sticky;top:0;height:100svh;overflow:hidden;background:linear-gradient(var(--edge),transparent 22%),radial-gradient(120% 90% at 50% 55%,color-mix(in srgb,var(--season),#fff 22%) 0%,var(--season) 55%,color-mix(in srgb,var(--season),#000 22%) 100%)}
+.stage{position:sticky;top:0;height:100svh;overflow:hidden;background:linear-gradient(var(--edge),transparent 22%),radial-gradient(120% 90% at 50% 55%,rgba(255,255,255,.22) 0%,rgba(255,255,255,0) 55%,rgba(0,0,0,.22) 100%),var(--season)}
 .intro,.fur-wrap{position:absolute;left:50%;top:50%;height:min(66svh,104vw);aspect-ratio:4/5;translate:-50% -50%;will-change:transform}
 /* 털은 화면을 덮을 크기로 그려 두고 작게 줄여서 시작 (키우면 흐려지니까) */
 .fur-wrap{height:max(240svh,220vw)}

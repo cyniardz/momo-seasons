@@ -390,7 +390,8 @@
   var opening = document.getElementById('opening'), opWord = document.getElementById('opWord'), opCross = document.getElementById('opCross'),
       opMouse = document.getElementById('opMouse'), opFill = document.getElementById('opFill'),
       opSmall = opening.querySelector('.op-small'), opColor = opSmall.querySelector('.c');
-  var opTitle = opening.querySelector('.op-title');
+  /* 색 rgb를 흰색 쪽으로 t만큼 (CSS color-mix 대신: 오래된 브라우저에서도 되게) */
+  function mix(c, t){ return 'rgb(' + c.map(function(v){ return Math.round(v + (255 - v) * t); }).join(',') + ')'; }
   function opTick(){
     H = innerHeight;
     var r = opening.getBoundingClientRect(), p = clamp01(-r.top / (r.height - H));
@@ -404,7 +405,7 @@
     opColor.style.clipPath = 'circle(' + (clamp01((p - .2) / .11) * 34 + clamp01((p - .3) / .16) * 70) + '% at 50% 26%)';
     /*    십자는 처음엔 빨강, 글자가 다 빨개지면 흰색. 스크롤 내내 회전 */
     var cr = opCross.getBoundingClientRect(), cw = clamp01((lineY - cr.top) / (wr.bottom - cr.top));
-    opCross.style.setProperty('--cc', 'color-mix(in srgb, #fff ' + Math.round(cw * 100) + '%, #d8333b)');
+    opCross.style.setProperty('--cc', mix([216,51,59], cw));
     opCross.style.transform = 'rotate(' + (45 + p * 720) + 'deg)';
     opMouse.style.opacity = 1 - clamp01(p / .03);
     /* 2) 모모에서 기본 모모 배경색이 원으로 퍼짐. 글자는 그 위에 남고 흰색으로 */
@@ -412,7 +413,7 @@
     opFill.style.setProperty('--fx', (x0 + w0 / 2) + 'px');
     opFill.style.setProperty('--fy', (y0 + h0 * .45) + 'px');
     opFill.style.setProperty('--fr', (e * Math.hypot(innerWidth, H)) + 'px');
-    opWord.style.setProperty('--ink', 'color-mix(in srgb, #fff ' + Math.round(e * 100) + '%, var(--red))');
+    opWord.style.setProperty('--ink', mix([179,36,44], e));
     /* 3) 다 칠해지면 인트로 화면이 위로 스크롤되어 올라가고(q: 0→1), 모모는 화면을 따라 내려와
           첫 무대 모모 자리에 닿음 (곰 부분 = 원본 1488x1275 중 x430 y240, 640x870) */
     var q = clamp01((H - r.bottom) / H);
