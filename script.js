@@ -167,11 +167,10 @@
     hero.style.setProperty('--sd', dir);
     scenes[from].classList.remove('on');
     if (!fast){
-      if (!swap){ hero.classList.add('pump'); momo.classList.add('fly'); }
+      if (!swap) momo.classList.add('fly');        // 화면은 그대로, 모모만 위로
       else if (momoFrom) momo.classList.add('gone');
     }
     setTimeout(function(){
-      hero.classList.remove('pump');
       scene = to;
       hero.dataset.scene = to;
       scenes[to].classList.add('on');
@@ -182,7 +181,10 @@
       if (swap){ momo.classList.toggle('gone', !momoTo); setTimeout(function(){ moving = false; }, 800); return; }
       if (momoTo){
         momo.classList.add('fly'); void momo.offsetWidth;            // 새 자리 위쪽 화면 밖에서
-        momo.classList.add('land'); momo.classList.remove('fly');    // 아래로 떨어져 정착
+        momo.classList.add('land'); momo.classList.remove('fly');    // 아래로 떨어져
+        setTimeout(function(){                                       // 제자리에 닿는 순간 모모만 살짝 덜컹
+          hop.classList.remove('hop', 'thud'); void hop.offsetWidth; hop.classList.add('thud');
+        }, 520);
       }
       setTimeout(function(){ momo.classList.remove('land'); moving = false; }, 900);
     }, fast ? 0 : swap ? 420 : 480);   // 소개 ↔ 굿즈: 모모가 사라지는 걸 보여 준 뒤 다음 장면
@@ -203,7 +205,22 @@
   function last(){ return cur === 0 ? scenes.length - 1 : 1; }
   function heroTop(){ return hero.getBoundingClientRect().top; }
   function atHero(){ return Math.abs(heroTop()) < 2; }
-  function toHero(smooth){ scrollBy({top:heroTop(), behavior:smooth ? 'smooth' : 'instant'}); }
+  function toHero(){ stopGlide(); scrollBy({top:heroTop(), behavior:'instant'}); }
+
+  /* 미끄러지는 스크롤: 휠 입력을 목표 위치에 쌓고, 매 프레임 남은 거리의 일부씩 따라감 */
+  var target = 0, pos = 0, raf = 0, rafT = 0;
+  function glide(y){
+    if (!raf){ pos = scrollY; rafT = performance.now(); raf = requestAnimationFrame(step); }
+    target = Math.max(0, Math.min(y, document.documentElement.scrollHeight - innerHeight));
+  }
+  function step(now){
+    /* 화면 주사율과 상관없이 같은 빠르기. 첫 프레임 시각이 시작 시각보다 앞설 수 있어 0 아래로는 안 내려가게 (거꾸로 움직이면 무대가 붙잡음) */
+    pos += (target - pos) * (1 - Math.pow(.92, Math.max(0, now - rafT) / 16.7)); rafT = now;
+    if (Math.abs(target - pos) < .5){ pos = target; raf = 0; } else raf = requestAnimationFrame(step);
+    scrollTo({top:pos, behavior:'instant'});
+  }
+  function stopGlide(){ cancelAnimationFrame(raf); raf = 0; }
+  function glideFrom(){ return raf ? target : scrollY; }
   /* 맨 위로 갈 수 있는 건 기본 모모일 때뿐. 계절 모모는 첫 무대가 첫 화면 */
   function topScene(){ return scene === 0 && cur === 0; }
   /* 휠 예측이 빗나가도(부드러운 스크롤, 트랙패드 관성) 첫 무대를 지나치면 그 자리로 되돌림 */
@@ -227,24 +244,34 @@
      계속 굴리거나 트랙패드 관성이 남아 있어도 장면을 줄줄이 넘기지 않게 */
   var acc = 0, accT, cool = 0, locked = false, lastWheel = 0;
   addEventListener('wheel', function(e){
+    if (e.ctrlKey) return;                            // 확대·축소
     var down = e.deltaY > 0, now = Date.now(), gap = now - lastWheel;
+    var d = e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? innerHeight : 1);   // 파이어폭스는 줄 단위
     lastWheel = now;
     if (innerScroll(e.target, down)) return;
     var t = heroTop();
     if (Math.abs(t) >= 2){
-      /* 스크롤하다 첫 무대를 지나치지 않게 그 자리에 멈춤 (관성은 잠깐 무시) */
-      if (down ? t > 0 && t - e.deltaY <= 0 : t < 0 && t - e.deltaY >= 0){ e.preventDefault(); toHero(); acc = 0; cool = now + 1000; held_ = now + 1000; locked = true; }
+      /* 스크롤하다 첫 무대를 지나치지 않게 그 자리에 멈춤 (도착하면 scroll 이벤트가 잠금) */
+      var heroY = scrollY + t, from = glideFrom(), y = from + d;
+      var cross = down ? from < heroY && y >= heroY : from > heroY && y <= heroY;
+      if (reduce){ if (cross){ e.preventDefault(); toHero(); acc = 0; cool = now + 1000; held_ = now + 1000; locked = true; } return; }
+      e.preventDefault(); glide(cross ? heroY : y);
       return;
     }
+    var idle = !moving && !busy;
+    var leave = idle && (down ? scene === last() : topScene());   // 무대를 벗어나 페이지로 가는 방향
     if (locked){
-      if (gap < 250 || now < cool){ e.preventDefault(); return; }
+      /* 장면끼리는 휠을 한 번 멈춰야 넘어가지만, 페이지로 나갈 때는 계속 굴려도 전환이 끝나면 바로 */
+      if ((gap < 250 && !leave) || now < cool){ e.preventDefault(); return; }
       locked = false;
     }
-    var idle = !moving && !busy;
-    if (idle && (down ? scene === last() : topScene())) return;   // 페이지 스크롤에 맡김
+    if (leave){                                            // 페이지 스크롤로
+      if (!reduce){ e.preventDefault(); glide(glideFrom() + d); }
+      return;
+    }
     e.preventDefault();
     if (!idle) return;
-    acc += e.deltaY * (e.deltaMode === 1 ? 40 : 1);   // 파이어폭스는 줄 단위
+    acc += d;
     clearTimeout(accT); accT = setTimeout(function(){ acc = 0; }, 300);
     if (Math.abs(acc) < 150) return;                  // 마우스 휠 약 2칸
     acc = 0; cool = now + 900; locked = true;         // 장면마다 한 번씩 멈춤
@@ -292,7 +319,7 @@
 
   /* 모모 누르면 폴짝 */
   document.getElementById('hit').addEventListener('click', function(){
-    hop.classList.remove('hop'); void hop.offsetWidth; hop.classList.add('hop');
+    hop.classList.remove('hop', 'thud'); void hop.offsetWidth; hop.classList.add('hop');
   });
 
   /* 마우스 패럴랙스 */
@@ -402,8 +429,7 @@
     var x0 = opSmall.offsetLeft, y0 = opSmall.offsetTop, w0 = opSmall.offsetWidth, h0 = opSmall.offsetHeight;
     opWord.style.setProperty('--w', ((lineY - wr.top) / wr.height * 100) + '%');
     /*    모모는 털모자에서 원으로 색이 퍼지고, 이어서 몸 전체로 */
-    opColor.style.clipPath = 'circle(' + (clamp01((p - .2) / .11) * 34 + clamp01((p - .3) / .16) * 70) + '% at 50% 26%)';
-    /*    십자는 처음엔 빨강, 글자가 다 빨개지면 흰색. 스크롤 내내 회전 */
+    opColor.style.clipPath = 'circle(' + (clamp01((p - .2) / .11) * 34 + clamp01((p - .3) / .16) * 70) + '% at 50% 26%)';    /*    십자는 처음엔 빨강, 글자가 다 빨개지면 흰색. 스크롤 내내 회전 */
     var cr = opCross.getBoundingClientRect(), cw = clamp01((lineY - cr.top) / (wr.bottom - cr.top));
     opCross.style.setProperty('--cc', mix([216,51,59], cw));
     opCross.style.transform = 'rotate(' + (45 + p * 720) + 'deg)';

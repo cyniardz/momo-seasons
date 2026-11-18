@@ -6,7 +6,7 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;font-family:var(--display);word-break:keep-all;-webkit-font-smoothing:antialiased;color:#fff;line-height:1.8;background:var(--season);transition:background-color .9s}
-body{--paper:#f3ebde;--ink:#3b2a22;--season:#a3232b;--edge:rgba(0,0,0,.1)}
+body{--paper:#f3ebde;--ink:#3b2a22;--season:#a3232b}
 button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
 h1,h2,h3,p,dl,dd,ol,ul,figure{margin:0;padding:0}
 ol,ul{list-style:none}
@@ -14,7 +14,7 @@ a{color:inherit}
 :focus-visible{outline:3px solid #fff;outline-offset:4px;border-radius:12px}
 
 /* ── 인트로: 이 높이만큼 스크롤하는 동안 화면에 고정 ── */
-.opening{--red:#b3242c;height:460svh;position:relative;z-index:2;background:#141012}
+.opening{--red:#b3242c;height:620svh;position:relative;z-index:2;background:#141012}
 .op-stage{position:sticky;top:0;height:100svh;overflow-x:clip}   /* 모모가 아래 첫 무대로 내려갈 때 잘리지 않게 세로는 열어 둠 */
 .opening.done .op-small{visibility:hidden}
 .op-title{position:absolute;inset:0;z-index:3}
@@ -32,7 +32,7 @@ a{color:inherit}
 .mo .c{clip-path:circle(0% at 50% 26%)}
 .op-small{--oh:min(50svh,95vw);left:calc(50% - var(--oh) * .3678);top:calc(93svh - var(--oh));height:var(--oh);transform-origin:0 0;z-index:4}
 /* 모모에서 퍼지는 기본 모모 배경색 (첫 무대 배경과 같은 색) */
-.op-fill{position:absolute;inset:0;z-index:2;background:linear-gradient(transparent 78%,var(--edge)),radial-gradient(48svh 44svh at 50% 55%,rgba(255,255,255,.32),rgba(255,255,255,.12) 55%,rgba(255,255,255,0)),radial-gradient(120% 90% at 50% 55%,#cf4a52 0%,#a3232b 55%,#7d1820 100%);clip-path:circle(var(--fr,0px) at var(--fx,50%) var(--fy,60%))}
+.op-fill{position:absolute;inset:0;z-index:2;background:linear-gradient(transparent 78%,var(--season)),radial-gradient(48svh 44svh at 50% 55%,rgba(255,255,255,.32),rgba(255,255,255,.12) 55%,rgba(255,255,255,0)),radial-gradient(120% 90% at 50% 55%,#cf4a52 0%,#a3232b 55%,#7d1820 100%);clip-path:circle(var(--fr,0px) at var(--fx,50%) var(--fy,60%))}
 .op-mouse{position:absolute;left:50%;bottom:24px;width:20px;height:32px;translate:-50% 0;border:2px solid rgba(255,255,255,.7);border-radius:10px;z-index:4}
 .op-mouse::after{content:"";position:absolute;left:50%;top:6px;width:2px;height:7px;translate:-50% 0;background:#fff;border-radius:2px;animation:wheel 1.6s ease-in-out infinite}
 @keyframes wheel{0%{opacity:0;transform:translateY(-2px)}40%{opacity:1}100%{opacity:0;transform:translateY(8px)}}
@@ -46,9 +46,9 @@ a{color:inherit}
 .hero:not(.ready) .momo{visibility:hidden}
 /* 도착한 뒤엔 첫 무대가 인트로 위에 그려져, 스크롤이 소수점에서 멈춰도 위쪽에 인트로 끝선이 비치지 않게 (위로 2px 겹침) */
 .hero.ready{z-index:3}
-/* 위 인트로·아래 인스타그램과 같은 색(--edge)에서 만나도록 위아래를 살짝 어둡게 */
-.hero::before{content:"";position:absolute;left:0;right:0;top:0;height:22%;z-index:1;pointer-events:none;background:linear-gradient(var(--edge),transparent)}
-.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22%;z-index:1;pointer-events:none;background:linear-gradient(transparent,var(--edge))}
+/* 위 인트로·아래 인스타그램과 경계가 안 보이게, 위아래 끝은 모두 같은 단색(--season)으로 풀어 줌 */
+.hero::before{content:"";position:absolute;left:0;right:0;top:0;height:22%;z-index:1;pointer-events:none;background:linear-gradient(var(--season),transparent)}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22%;z-index:1;pointer-events:none;background:linear-gradient(transparent,var(--season))}
 /* 소개 장면: 모모가 왼쪽 칸에 정착 */
 .hero[data-scene="1"]{--mx:calc(50% - var(--wrap) / 4);--mt:17svh;--mh:72svh;--gx:calc(50% - var(--wrap) / 4);--gy:56%}
 
@@ -93,9 +93,12 @@ a{color:inherit}
 .momo.fly{transform:translate(-50%,-160svh)}
 .momo.gone{opacity:0;transform:translateX(-50%) scale(.94);transition:opacity .6s ease,transform .6s ease}
 .momo:not(.gone){transition:transform .45s cubic-bezier(.55,0,.9,.45),opacity .7s ease}
-.momo.land{transition:transform .85s cubic-bezier(.3,1.35,.55,1)}
+.momo.land{transition:transform .55s cubic-bezier(.55,0,.95,.5)}   /* 튕기지 않고 툭 떨어짐 → 닿는 순간 .thud */
 .shadow{position:absolute;left:50%;top:84.2%;width:26%;height:5%;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(20,10,30,.38),rgba(20,10,30,0));filter:blur(4px)}
 .momo-hop{position:absolute;inset:0}
+/* 자리에 끼워지듯 발밑 기준으로 살짝 눌렸다가 돌아옴 */
+.momo-hop.thud{transform-origin:50% 84%;animation:thud .42s cubic-bezier(.3,.7,.4,1)}
+@keyframes thud{0%,100%{transform:none}25%{transform:translateY(1.2%) scale(1.035,.955)}60%{transform:translateY(-.4%) scale(.99,1.01)}}
 .momo-hop.hop{animation:hop .55s cubic-bezier(.3,.7,.4,1)}
 @keyframes hop{0%,100%{transform:translateY(0) scale(1)}15%{transform:translateY(0) scale(1.04,.94)}45%{transform:translateY(-7%) scale(.97,1.04)}80%{transform:translateY(0) scale(1.03,.96)}}
 .momo-shift{position:absolute;inset:0;transform-origin:50% 84%;transition:transform 1.2s var(--ease)}
@@ -196,8 +199,8 @@ a{color:inherit}
   background-size:50% 50%;background-repeat:no-repeat}
 
 /* ── 인스타그램 구간: 이 높이만큼 스크롤하는 동안 무대는 화면에 고정 ── */
-.insta{height:440svh;position:relative}
-.stage{position:sticky;top:0;height:100svh;overflow:hidden;background:linear-gradient(var(--edge),transparent 22%),radial-gradient(120% 90% at 50% 55%,rgba(255,255,255,.22) 0%,rgba(255,255,255,0) 55%,rgba(0,0,0,.22) 100%),var(--season)}
+.insta{height:600svh;position:relative}
+.stage{position:sticky;top:0;height:100svh;overflow:hidden;background:linear-gradient(var(--season),transparent 22%),radial-gradient(120% 90% at 50% 55%,rgba(255,255,255,.22) 0%,rgba(255,255,255,0) 55%,rgba(0,0,0,.22) 100%),var(--season)}
 .intro,.fur-wrap{position:absolute;left:50%;top:50%;height:min(66svh,104vw);aspect-ratio:4/5;translate:-50% -50%;will-change:transform}
 /* 털은 화면을 덮을 크기로 그려 두고 작게 줄여서 시작 (키우면 흐려지니까) */
 .fur-wrap{height:max(240svh,220vw)}
@@ -231,7 +234,8 @@ a{color:inherit}
 @media (hover:none){.hint{display:none}}
 
 /* 인스타그램 계정 카드 */
-.paper{background:var(--paper);padding:clamp(60px,10svh,110px) 0}
+/* 아래 이야기 구간(계절색)으로 끊기지 않게 아래쪽 여백에서 종이색 → 계절색으로 번짐 */
+.paper{--fade:clamp(180px,30svh,300px);padding:clamp(60px,10svh,110px) 0 var(--fade);background:linear-gradient(var(--paper) calc(100% - var(--fade)),var(--season))}
 .ticket{--R:30px;--i:12px;--lw:2px;--bg:var(--season);--line:rgba(255,255,255,.75);width:var(--wrap);margin:auto;display:grid;grid-template-columns:1fr 1.25fr;gap:clamp(28px,5vw,80px);
   padding:clamp(44px,7vw,90px) clamp(32px,6vw,90px);color:#fff;transition:background-color .9s}
 .ticket > *{position:relative;z-index:1}
