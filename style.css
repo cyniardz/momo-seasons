@@ -4,19 +4,49 @@
   --wrap:min(1120px,100vw - 48px);
 }
 *{box-sizing:border-box}
-html,body{height:100%;overflow:hidden}
-body{margin:0;font-family:var(--display);word-break:keep-all;-webkit-font-smoothing:antialiased;color:#fff;line-height:1.8;background:#c4426f}
-body{--paper:#f3ebde;--ink:#3b2a22}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--display);word-break:keep-all;-webkit-font-smoothing:antialiased;color:#fff;line-height:1.8;background:var(--season);transition:background-color .9s}
+body{--paper:#f3ebde;--ink:#3b2a22;--season:#a3232b;--edge:color-mix(in srgb,var(--season),#000 10%)}
 button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
 h1,h2,h3,p,dl,dd,ol,ul,figure{margin:0;padding:0}
 ol,ul{list-style:none}
 a{color:inherit}
 :focus-visible{outline:3px solid #fff;outline-offset:4px;border-radius:12px}
 
-/* ── 무대: 한 화면에 고정, 장면만 바뀜 ── */
+/* ── 인트로: 이 높이만큼 스크롤하는 동안 화면에 고정 ── */
+.opening{--red:#b3242c;height:460svh;position:relative;z-index:2;background:#141012}
+.op-stage{position:sticky;top:0;height:100svh;overflow-x:clip}   /* 모모가 아래 첫 무대로 내려갈 때 잘리지 않게 세로는 열어 둠 */
+.opening.done .op-small{visibility:hidden}
+.op-title{position:absolute;inset:0;z-index:3}
+/* 글자: 흰색에서 위부터 빨간색이 차오름 (--w = 차오른 높이 %, 스크롤로 계산) */
+.op-word{position:absolute;left:50%;top:12svh;translate:-50% 0;margin:0;display:grid;justify-items:center;width:max-content;
+  font-weight:900;font-size:min(10.5vw,15svh);line-height:.88;letter-spacing:-.045em;
+  background:linear-gradient(180deg,var(--ink,var(--red)) var(--w,0%),#fff var(--w,0%));-webkit-background-clip:text;background-clip:text;color:transparent}
+.op-cross{--cc:#d8333b;position:absolute;left:50%;top:calc(12svh + min(10.5vw,15svh) * .88);width:min(7vw,10svh);aspect-ratio:1;translate:-50% -50%;z-index:2}
+.op-cross::before,.op-cross::after{content:"";position:absolute;left:50%;top:50%;width:100%;height:28%;translate:-50% -50%;background:var(--cc)}
+.op-cross::after{rotate:90deg}
+/* 모모: 흑백 위에 컬러를 위에서부터 열어 보임 */
+.mo{position:absolute;aspect-ratio:640/870}
+.mo img{position:absolute;inset:0;width:100%;height:100%;-webkit-user-drag:none}
+.mo .g{filter:grayscale(1) brightness(.9) contrast(1.05)}
+.mo .c{clip-path:circle(0% at 50% 26%)}
+.op-small{--oh:min(50svh,95vw);left:calc(50% - var(--oh) * .3678);top:calc(93svh - var(--oh));height:var(--oh);transform-origin:0 0;z-index:4}
+/* 모모에서 퍼지는 기본 모모 배경색 (첫 무대 배경과 같은 색) */
+.op-fill{position:absolute;inset:0;z-index:2;background:linear-gradient(transparent 78%,var(--edge)),radial-gradient(48svh 44svh at 50% 55%,rgba(255,255,255,.32),rgba(255,255,255,.12) 55%,rgba(255,255,255,0)),radial-gradient(120% 90% at 50% 55%,#cf4a52 0%,#a3232b 55%,#7d1820 100%);clip-path:circle(var(--fr,0px) at var(--fx,50%) var(--fy,60%))}
+.op-mouse{position:absolute;left:50%;bottom:24px;width:20px;height:32px;translate:-50% 0;border:2px solid rgba(255,255,255,.7);border-radius:10px;z-index:4}
+.op-mouse::after{content:"";position:absolute;left:50%;top:6px;width:2px;height:7px;translate:-50% 0;background:#fff;border-radius:2px;animation:wheel 1.6s ease-in-out infinite}
+@keyframes wheel{0%{opacity:0;transform:translateY(-2px)}40%{opacity:1}100%{opacity:0;transform:translateY(8px)}}
+@media (hover:none){html{scroll-snap-type:y proximity}.hero{scroll-snap-align:start}}
+
+/* ── 첫 무대: 한 화면, 장면만 바뀜 (마지막 장면 뒤로는 페이지 스크롤) ── */
 .hero{--pump:1;--spin:0deg;--dir:1;--ring:rgba(255,255,255,.7);
   --mx:50%;--mt:12svh;--mh:82svh;--gx:50%;--gy:55%;
-  position:fixed;inset:0;overflow:hidden;user-select:none;-webkit-user-select:none}
+  position:relative;z-index:1;height:100svh;overflow:hidden;user-select:none;-webkit-user-select:none}
+/* 인트로 모모가 내려와 이 자리에 닿기 전까지는 첫 무대 모모를 숨김 (닿으면 바꿔치기) */
+.hero:not(.ready) .momo{visibility:hidden}
+/* 위 인트로·아래 인스타그램과 같은 색(--edge)에서 만나도록 위아래를 살짝 어둡게 */
+.hero::before{content:"";position:absolute;left:0;right:0;top:0;height:22%;z-index:1;pointer-events:none;background:linear-gradient(var(--edge),transparent)}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22%;z-index:1;pointer-events:none;background:linear-gradient(transparent,var(--edge))}
 /* 소개 장면: 모모가 왼쪽 칸에 정착 */
 .hero[data-scene="1"]{--mx:calc(50% - var(--wrap) / 4);--mt:17svh;--mh:72svh;--gx:calc(50% - var(--wrap) / 4);--gy:56%}
 
@@ -25,6 +55,7 @@ a{color:inherit}
 .hero.pump{--pump:1.38;--spin:-14deg}
 .hero.pump .bg{transform:scale(1.1);transition:opacity .9s,transform .52s ease-out}
 .bg.on{opacity:1}
+.bg-base{background:radial-gradient(120% 90% at 50% 55%,#cf4a52 0%,#a3232b 55%,#7d1820 100%)}
 .bg-spring{background:radial-gradient(120% 90% at 50% 55%,#ee7fa2 0%,#c4426f 55%,#a8305a 100%)}
 .bg-summer{background:radial-gradient(120% 90% at 50% 55%,#3aa6e8 0%,#1673c9 55%,#0b4f95 100%)}
 .bg-autumn{background:radial-gradient(120% 90% at 50% 55%,#e0873f 0%,#b44f1c 55%,#8c3c13 100%)}
@@ -33,7 +64,7 @@ a{color:inherit}
 .glow{position:absolute;z-index:1;left:var(--gx);top:var(--gy);width:96svh;height:88svh;transform:translate(-50%,-50%);pointer-events:none;
   background:radial-gradient(closest-side,rgba(255,255,255,.32),rgba(255,255,255,.12) 55%,rgba(255,255,255,0));
   transition:left .9s var(--ease),top .9s var(--ease),opacity .6s}
-.hero[data-scene="2"] .glow,.hero[data-scene="3"] .glow,.hero[data-scene="4"] .glow{opacity:.5}
+.hero[data-scene="2"] .glow{opacity:.5}
 
 /* 상단 */
 .top{position:absolute;inset:0 0 auto 0;z-index:7;display:flex;flex-direction:column;align-items:center;gap:2px;padding:22px clamp(20px,4vw,60px)}
@@ -58,6 +89,8 @@ a{color:inherit}
 /* 모모 — 장면이 바뀌면 위로 날아갔다가 새 자리로 떨어짐 */
 .momo{position:absolute;z-index:3;left:var(--mx);top:var(--mt);height:var(--mh);aspect-ratio:496/425;transform:translateX(-50%);pointer-events:none;transition:transform .45s cubic-bezier(.55,0,.9,.45)}
 .momo.fly{transform:translate(-50%,-160svh)}
+.momo.gone{opacity:0;transform:translateX(-50%) scale(.94);transition:opacity .6s ease,transform .6s ease}
+.momo:not(.gone){transition:transform .45s cubic-bezier(.55,0,.9,.45),opacity .7s ease}
 .momo.land{transition:transform .85s cubic-bezier(.3,1.35,.55,1)}
 .shadow{position:absolute;left:50%;top:84.2%;width:26%;height:5%;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(20,10,30,.38),rgba(20,10,30,0));filter:blur(4px)}
 .momo-hop{position:absolute;inset:0}
@@ -80,8 +113,10 @@ a{color:inherit}
   opacity:0;visibility:hidden;transform:translateY(calc(var(--sd,1) * 36px));
   transition:opacity .4s,transform .4s,visibility 0s .4s}
 .scene.on{opacity:1;visibility:visible;transform:none;transition:opacity .55s .4s,transform .7s .4s var(--ease),visibility 0s}
+.hero.quick .scene{transition-duration:.45s}
+.hero.quick .scene.on{transition-duration:.7s;transition-delay:.1s}
 .scene > .wrap{margin:auto;width:var(--wrap)}
-.scene h2{font-weight:800;letter-spacing:-.03em;font-size:clamp(2rem,4vw,3.2rem);line-height:1.2}
+.scene h2,.story h2{font-weight:800;letter-spacing:-.03em;font-size:clamp(2rem,4vw,3.2rem);line-height:1.2}
 .lead{margin-top:12px;font-size:1.05rem;max-width:32em}
 
 /* 장면 0: 히어로 UI (모모 클릭이 통과되도록) */
@@ -124,74 +159,9 @@ a{color:inherit}
 .good h3{font-weight:700;font-size:1rem;margin-top:8px}
 .good p{font-size:.86rem;line-height:1.45;opacity:.85}
 
-/* 장면 3: 갤러리 — 왼쪽 포즈 8장, 오른쪽 인스타 피드 */
-.gal-wrap{display:grid;grid-template-columns:1fr 380px;gap:clamp(28px,4vw,64px);align-items:center}
-.gal{margin-top:28px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:540px}
-
-/* 인스타그램 프로필 미리보기 */
-.ig{background:#fff;color:#111;border-radius:28px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.25);height:min(660px,calc(100svh - 170px));display:flex;flex-direction:column;line-height:1.4}
-.ig a{text-decoration:none}
-.ig-bar{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 10px;border-bottom:1px solid #efefef;font-size:.95rem}
-.ig-bar a{font-size:.75rem;color:#0095f6;font-weight:600}
-.ig-scroll{flex:1;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
-.ig-head{display:flex;align-items:center;gap:16px;padding:14px 16px 0}
-/* 스토리 링 = 사계절 색 */
-.ig-ring{flex:none;width:76px;height:76px;border-radius:50%;padding:3px;background:conic-gradient(#c4426f 0 25%,#1673c9 0 50%,#b44f1c 0 75%,#145640 0)}
-.ig-ring img{width:100%;height:100%;border-radius:50%;border:3px solid #fff;object-fit:cover;display:block}
-.ig-name{font-weight:700;font-size:.9rem}
-.ig-meta{font-size:.82rem;color:#555;margin-top:2px}
-.ig-bio{padding:10px 16px 0;font-size:.82rem;color:#222}
-.ig-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:12px 16px 0}
-.ig-btns a{text-align:center;padding:6px 0;border-radius:8px;background:#efefef;font-weight:600;font-size:.82rem;color:#111}
-.ig-btns .ig-follow{background:#0095f6;color:#fff}
-.ig-hl{display:flex;gap:14px;padding:14px 16px 10px;font-size:.7rem;text-align:center;color:#222}
-.ig-hl li{display:grid;justify-items:center;gap:4px}
-.ig-hl span{width:54px;height:54px;border-radius:50%;padding:2px;background:#ddd;display:grid;place-items:center;overflow:hidden;box-shadow:inset 0 0 0 2px #fff}
-.ig-hl span{background:var(--g)}
-.ig-hl img{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid #fff;background:#fff}
-.ig-hl img.sp{object-fit:contain;padding:6px;background:#fff6f8}
-.ig-hl b{color:#fff;font-size:.8rem}
-.ig-tab{display:grid;place-items:center;padding:8px 0;border-top:1px solid #efefef;border-bottom:2px solid #111;width:33.4%}
-.ig-tab svg{width:20px;height:20px}
-
-/* 줄맞춤 피드: 한 줄(3칸)이 하나의 색 띠로 이어짐. 타일 비율 3:4 */
-.ig-grid{display:grid;gap:2px}
-.row{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
-.r-pin{--g:linear-gradient(90deg,#f8f1e7,#efe3d0 55%,#e3d0b6);color:#3b2a22}
-.r-spring{--g:linear-gradient(90deg,#f39bb7,#c4426f 55%,#a8305a)}
-.r-summer{--g:linear-gradient(90deg,#5ab8f0,#1673c9 55%,#0b4f95)}
-.r-autumn{--g:linear-gradient(90deg,#ea9a55,#b44f1c 55%,#8c3c13)}
-.r-winter{--g:linear-gradient(90deg,#3a9a76,#145640 55%,#0a3628)}
-.t{position:relative;aspect-ratio:3/4;overflow:hidden;background:var(--g);background-size:300% 100%;color:#fff}
-.t:nth-child(1){background-position:0 0}
-.t:nth-child(2){background-position:50% 0}
-.t:nth-child(3){background-position:100% 0}
-.t .photo{width:100%;height:100%;object-fit:cover;display:block}
-.t .cut{position:absolute;left:50%;bottom:-6%;width:190%;max-width:none;transform:translateX(-50%)}
-.t button{position:absolute;inset:0;width:100%}
-.t button:hover{background:rgba(255,255,255,.12)}
-.txt{display:flex;flex-direction:column;justify-content:center;padding:0 10px;line-height:1.15}
-.txt b{font-weight:800;font-size:1.5rem;letter-spacing:-.03em}
-.txt small{font-size:.58rem;letter-spacing:.18em;opacity:.8;margin-top:4px}
-.txt span{font-size:.72rem;font-weight:600;margin-top:10px;line-height:1.35}
-.r-pin .t{color:#3b2a22}
-.r-pin .txt b{font-size:1.05rem}
-.obj{display:grid;place-items:center;align-content:center;gap:6px}
-.obj img{width:62%;filter:drop-shadow(0 4px 6px rgba(0,0,0,.2))}
-.obj span{font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.22)}
-.t em{position:absolute;left:6px;bottom:6px;font-style:normal;font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.9);color:#3b2a22}
-/* 고정 게시물 핀 */
-.pin::after{content:"";position:absolute;top:6px;right:6px;width:14px;height:14px;background:currentColor;
-  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16 3l5 5-3 1-4 4 1 5-2 2-4-4-5 5-1-1 5-5-4-4 2-2 5 1 4-4z'/%3E%3C/svg%3E") center/contain no-repeat;
-  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16 3l5 5-3 1-4 4 1 5-2 2-4-4-5 5-1-1 5-5-4-4 2-2 5 1 4-4z'/%3E%3C/svg%3E") center/contain no-repeat}
-.r-pin .t:nth-child(3).pin::after{color:#fff}
-.gal figure{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:496/425}
-.gal img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s var(--ease)}
-.gal figure:hover img{transform:scale(1.05)}
-.gal button{position:absolute;inset:0;width:100%;border-radius:16px;text-align:left}
-.gal button span{position:absolute;left:8px;bottom:8px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.92);color:var(--ink);font-weight:600;font-size:.78rem}
-
-/* 장면 4: 이야기 + 마무리 */
+/* 이야기 + 마무리 */
+.story{padding:clamp(80px,14svh,140px) 0 40px}
+.story > .wrap{width:var(--wrap);margin:auto}
 .story-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,6vw,90px);align-items:start}
 .year{border-left:2px solid currentColor;padding-left:28px;display:grid;gap:20px}
 .year li{position:relative}
@@ -203,7 +173,90 @@ a{color:inherit}
 .follow:hover{transform:translateY(-2px)}
 .fine{opacity:.75}
 
+/* ── 액자: 모서리가 안으로 파인 종이 카드 + 안쪽 선 (인스타그램 구간 공통) ── */
+.frame{--R:22px;--i:10px;--lw:2px;--bg:var(--paper);--line:var(--season);position:relative;background:var(--bg);color:var(--line);
+  -webkit-mask:radial-gradient(circle at 0 0,#0000 var(--R),#000 calc(var(--R) + .5px)) top left,radial-gradient(circle at 100% 0,#0000 var(--R),#000 calc(var(--R) + .5px)) top right,
+    radial-gradient(circle at 0 100%,#0000 var(--R),#000 calc(var(--R) + .5px)) bottom left,radial-gradient(circle at 100% 100%,#0000 var(--R),#000 calc(var(--R) + .5px)) bottom right;
+  -webkit-mask-size:51% 51%;-webkit-mask-repeat:no-repeat;
+  mask:radial-gradient(circle at 0 0,#0000 var(--R),#000 calc(var(--R) + .5px)) top left/51% 51% no-repeat,radial-gradient(circle at 100% 0,#0000 var(--R),#000 calc(var(--R) + .5px)) top right/51% 51% no-repeat,
+    radial-gradient(circle at 0 100%,#0000 var(--R),#000 calc(var(--R) + .5px)) bottom left/51% 51% no-repeat,radial-gradient(circle at 100% 100%,#0000 var(--R),#000 calc(var(--R) + .5px)) bottom right/51% 51% no-repeat}
+/* 안쪽 선: 직선은 테두리, 모서리 곡선은 바깥 파임과 같은 중심의 고리 */
+.frame::before,.frame::after{content:"";position:absolute;inset:var(--i);pointer-events:none;--o:calc(var(--i) * -1);--rr:calc(var(--R) + var(--i))}
+.frame::before{border:var(--lw) solid var(--line);
+  -webkit-mask:radial-gradient(circle at var(--o) var(--o),#0000 var(--rr),#000 0) top left,radial-gradient(circle at calc(100% + var(--i)) var(--o),#0000 var(--rr),#000 0) top right,
+    radial-gradient(circle at var(--o) calc(100% + var(--i)),#0000 var(--rr),#000 0) bottom left,radial-gradient(circle at calc(100% + var(--i)) calc(100% + var(--i)),#0000 var(--rr),#000 0) bottom right;
+  -webkit-mask-size:51% 51%;-webkit-mask-repeat:no-repeat;
+  mask:radial-gradient(circle at var(--o) var(--o),#0000 var(--rr),#000 0) top left/51% 51% no-repeat,radial-gradient(circle at calc(100% + var(--i)) var(--o),#0000 var(--rr),#000 0) top right/51% 51% no-repeat,
+    radial-gradient(circle at var(--o) calc(100% + var(--i)),#0000 var(--rr),#000 0) bottom left/51% 51% no-repeat,radial-gradient(circle at calc(100% + var(--i)) calc(100% + var(--i)),#0000 var(--rr),#000 0) bottom right/51% 51% no-repeat}
+.frame::after{--ring:#0000 calc(var(--rr) - var(--lw)),var(--line) calc(var(--rr) - var(--lw)) var(--rr),#0000 var(--rr);
+  background:radial-gradient(circle at var(--o) var(--o),var(--ring)) top left,radial-gradient(circle at calc(100% + var(--i)) var(--o),var(--ring)) top right,
+    radial-gradient(circle at var(--o) calc(100% + var(--i)),var(--ring)) bottom left,radial-gradient(circle at calc(100% + var(--i)) calc(100% + var(--i)),var(--ring)) bottom right;
+  background-size:50% 50%;background-repeat:no-repeat}
+
+/* ── 인스타그램 구간: 이 높이만큼 스크롤하는 동안 무대는 화면에 고정 ── */
+.insta{height:440svh;position:relative}
+.stage{position:sticky;top:0;height:100svh;overflow:hidden;background:linear-gradient(var(--edge),transparent 22%),radial-gradient(120% 90% at 50% 55%,color-mix(in srgb,var(--season),#fff 22%) 0%,var(--season) 55%,color-mix(in srgb,var(--season),#000 22%) 100%)}
+.intro,.fur-wrap{position:absolute;left:50%;top:50%;height:min(66svh,104vw);aspect-ratio:4/5;translate:-50% -50%;will-change:transform}
+/* 털은 화면을 덮을 크기로 그려 두고 작게 줄여서 시작 (키우면 흐려지니까) */
+.fur-wrap{height:max(240svh,220vw)}
+.intro{--R:30px;--i:14px;--lw:3px;display:grid;place-items:center;padding:0 clamp(36px,6svh,64px);text-align:center}
+.intro p{width:100%;font-size:clamp(1.05rem,2.2svh,1.4rem);font-weight:600;line-height:1.6;letter-spacing:-.01em}
+/* 뽀글 털: 종이색 덩어리 가장자리를 노이즈로 흔들어 털처럼 */
+.fur{position:absolute;inset:0;background:var(--paper);border-radius:18%;filter:url(#furf)}
+
+.word{position:absolute;left:50%;top:50%;translate:-50% -54%;margin:0;font-weight:800;font-size:min(28vw,58svh);line-height:1;letter-spacing:-.05em;
+  color:transparent;-webkit-text-stroke:2px var(--season);opacity:0;pointer-events:none}
+.cards{position:absolute;inset:0}
+.card{--cw:min(16.5vw,27svh);--R:14px;--i:7px;--lw:1.5px;position:absolute;width:var(--cw);aspect-ratio:3/4;margin:calc(var(--cw) * -2 / 3) 0 0 calc(var(--cw) / -2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.3;cursor:grab;touch-action:pan-y;
+  filter:drop-shadow(0 10px 18px rgba(40,20,10,.16));transition:filter .2s}
+.card.big{--cw:min(23vw,40svh)}
+.card.held{cursor:grabbing;filter:drop-shadow(0 22px 30px rgba(40,20,10,.28))}
+.card img{pointer-events:none;-webkit-user-drag:none}
+.card .ph.cut{object-fit:contain;background:var(--season);padding:6% 0 0}
+.card .ph{position:absolute;left:9%;top:9%;width:82%;height:71%;object-fit:cover;border-radius:3px}
+.card .obj{width:58%;aspect-ratio:1;object-fit:contain;margin-top:-6%}
+.card .cap{position:absolute;left:0;right:0;bottom:7.5%;font-size:calc(var(--cw) * .052);font-weight:700}
+.card small{font-size:calc(var(--cw) * .05);font-weight:600;color:var(--ink);opacity:.8}
+.card .dia{position:relative;width:56%;height:1px;margin:7% 0;background:linear-gradient(90deg,transparent,var(--season) 40%,transparent 40% 60%,var(--season) 60%,transparent)}
+.card .dia::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;translate:-50% -50%;background:var(--season);rotate:45deg}
+.card b{font-weight:800;font-size:calc(var(--cw) * .17);letter-spacing:-.03em;line-height:1.05}
+.card b.say{font-size:calc(var(--cw) * .085);padding:0 12%;line-height:1.35}
+.card .sub{margin-top:6%;font-size:calc(var(--cw) * .055);font-weight:600}
+.hint,.keep{position:absolute;left:50%;bottom:22px;translate:-50% 0;margin:0;font-size:.85rem;font-weight:600;white-space:nowrap;pointer-events:none}
+.keep{color:var(--paper);border-bottom:1px solid currentColor;padding-bottom:4px}
+.hint{color:var(--ink);opacity:0}
+@media (hover:none){.hint{display:none}}
+
+/* 인스타그램 계정 카드 */
+.paper{background:var(--paper);padding:clamp(60px,10svh,110px) 0}
+.ticket{--R:30px;--i:12px;--lw:2px;--bg:var(--season);--line:rgba(255,255,255,.75);width:var(--wrap);margin:auto;display:grid;grid-template-columns:1fr 1.25fr;gap:clamp(28px,5vw,80px);
+  padding:clamp(44px,7vw,90px) clamp(32px,6vw,90px);color:#fff;transition:background-color .9s}
+.ticket > *{position:relative;z-index:1}
+.tk-who{text-align:center;display:grid;justify-items:center;align-content:center;gap:6px}
+.tk-id{font-weight:600;opacity:.8}
+.tk-who h2{font-weight:800;font-size:clamp(2rem,4.4vw,3.8rem);line-height:1.15;letter-spacing:-.03em}
+.tk-dia{position:relative;width:60%;height:1px;margin:10px 0;background:rgba(255,255,255,.5)}
+.tk-dia i{position:absolute;left:50%;top:50%;width:8px;height:8px;translate:-50% -50%;background:#fff;rotate:45deg}
+.tk-meta{font-weight:700}
+.tk-bio{font-size:.9rem;opacity:.85;margin-bottom:14px}
+.tk-list{display:grid;align-content:center;border-left:1px solid rgba(255,255,255,.3);padding-left:clamp(20px,4vw,56px)}
+.tk-list button{width:100%;display:grid;grid-template-columns:4.2em 1fr auto;align-items:baseline;gap:12px;padding:18px 2px;text-align:left;border-bottom:1px solid rgba(255,255,255,.3);
+  box-shadow:inset 0 -3px 0 transparent;transition:box-shadow .3s,opacity .3s;opacity:.7}
+.tk-list button:hover,.tk-list button[aria-pressed="true"]{opacity:1}
+.tk-list button[aria-pressed="true"]{box-shadow:inset 0 -3px 0 #fff}
+.tk-list b{font-weight:800;font-size:clamp(1.4rem,2.2vw,2rem);letter-spacing:-.03em}
+.tk-list span{font-weight:600}
+.tk-list small{font-size:.85rem;opacity:.85}
+
 @media (max-width:860px){
+  .card{--cw:39vw}
+  .card.big{--cw:52vw}
+  .ticket{grid-template-columns:1fr}
+  .tk-list{border-left:0;padding-left:0}
+  .tk-list button{grid-template-columns:3.4em 1fr}
+  .tk-list small{display:none}
+
   .hero{--mt:10svh;--mh:62svh;--gy:43%}
   .hero[data-scene="1"]{--mx:50%;--mt:7.5svh;--mh:39svh;--gx:50%;--gy:28%}
   .top{padding:14px 16px}
@@ -219,31 +272,21 @@ a{color:inherit}
   .about-grid,.story-grid{grid-template-columns:1fr}
   .about-grid > .spacer{height:28svh}
   .feat-list,.goods-list{grid-template-columns:repeat(2,1fr)}
-  .gal-wrap{grid-template-columns:1fr}
-  .ig{height:auto}
-  .ig-scroll{overflow:visible}   /* 휴대폰은 장면 전체가 스크롤 */
 }
 @media (prefers-reduced-motion:reduce){
   .bob{animation:none}
   .slot,.bob,.bob img,.copy,.bg,.momo,.momo-shift,.glow,.scene,.scene.on{transition-duration:.01s;transition-delay:0s}
   .momo-hop.hop{animation:none}
 }
-/* 피드·사진첩: 지금 계절 것만 보이기 */
-.hero:not([data-season="spring"]) :is(.r-spring,.s-spring),.hero:not([data-season="summer"]) :is(.r-summer,.s-summer),
-.hero:not([data-season="autumn"]) :is(.r-autumn,.s-autumn),.hero:not([data-season="winter"]) :is(.r-winter,.s-winter){display:none}
-
 /* 지금 계절 모모를 부분 확대 (momo-*.png 네 장은 구도가 같아 위치 하나로 공유) */
-.hero[data-season="spring"]{--momo:url(img/spring/momo-spring.png);--obj:url(img/spring/spring-0.png)}
-.hero[data-season="summer"]{--momo:url(img/summer/momo-summer.png);--obj:url(img/summer/summer-0.png)}
-.hero[data-season="autumn"]{--momo:url(img/autumn/momo-autumn.png);--obj:url(img/autumn/autumn-0.png)}
-.hero[data-season="winter"]{--momo:url(img/winter/momo-winter.png);--obj:url(img/winter/winter-4.png)}
+body[data-season="base"]{--momo:url(img/base/momo-full.png)}
+body[data-season="spring"]{--momo:url(img/spring/momo-spring.png)}
+body[data-season="summer"]{--momo:url(img/summer/momo-summer.png)}
+body[data-season="autumn"]{--momo:url(img/autumn/momo-autumn.png)}
+body[data-season="winter"]{--momo:url(img/winter/momo-winter.png)}
 .mz{display:block;background:#fbf6ef var(--momo) no-repeat;border-radius:50%;transition:background-image .4s}
 .mz-bonnet{background-size:285%;background-position:50% 16%}
 .mz-face{background-size:400%;background-position:50% 39%}
 .mz-bow{background-size:550%;background-position:48% 53%}
 .mz-feet{background-size:330%;background-position:48% 95%}
 .feat .mz{width:100%;max-width:88px;aspect-ratio:1;box-shadow:0 0 0 4px rgba(255,255,255,.55)}
-.ig-ring .mz{width:100%;height:100%;border:3px solid #fff}
-.ig-hl .mz{width:46px;height:46px;border:2px solid #fff}
-.ig-hl .sp{width:46px;height:46px;border-radius:50%;border:2px solid #fff;background:#fff var(--obj) center/70% no-repeat}
-.t .mz-body{position:absolute;inset:0;border-radius:0;background-color:transparent;background-size:auto 135%;background-position:50% 65%}

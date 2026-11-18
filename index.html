@@ -9,10 +9,25 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
-<!-- 한 화면 무대: 스크롤하면 아래로 내려가지 않고 장면이 바뀜 -->
-<main class="hero" id="hero" data-season="spring" data-scene="0">
-  <div class="bg bg-spring on"></div>
+<body data-season="base">
+<main>
+<!-- 인트로: 흑백으로 시작해 스크롤하면 색이 입혀지고, 큰 모모가 올라와 분신술을 쓴 뒤 첫 무대로 이어짐 -->
+<section class="opening" id="opening" aria-label="Momo's Four Seasons">
+  <div class="op-stage">
+    <div class="op-title">
+      <p class="op-word" id="opWord"><span>MOMO'S</span><span>FOUR SEASONS</span></p>
+      <i class="op-cross" id="opCross" aria-hidden="true"></i>
+    </div>
+    <div class="op-fill" id="opFill" aria-hidden="true"></div>
+    <div class="mo op-small" aria-hidden="true"><img src="img/base/momo-base.png" alt="" class="g"><img src="img/base/momo-base.png" alt="" class="c"></div>
+    <span class="op-mouse" id="opMouse" aria-hidden="true"></span>
+  </div>
+</section>
+
+<!-- 첫 무대: 화면에 고정된 채 장면만 바뀌다가, 마지막 장면(굿즈)에서 더 내리면 아래로 스크롤 -->
+<div class="hero" id="hero" data-scene="0">
+  <div class="bg bg-base on"></div>
+  <div class="bg bg-spring"></div>
   <div class="bg bg-summer"></div>
   <div class="bg bg-autumn"></div>
   <div class="bg bg-winter"></div>
@@ -23,8 +38,8 @@
     <nav class="menu" aria-label="주요 메뉴">
       <a href="#about" data-scene-go="1">모모 소개</a>
       <a href="#goods" data-scene-go="2">굿즈</a>
-      <a href="#gallery" data-scene-go="3">갤러리</a>
-      <a href="#story" data-scene-go="4">이야기</a>
+      <a href="#insta">인스타그램</a>
+      <a href="#story">이야기</a>
     </nav>
   </header>
 
@@ -33,7 +48,8 @@
   <div class="momo" id="momo" aria-hidden="true">
     <div class="shadow"></div>
     <div class="momo-shift"><div class="momo-hop" id="hop">
-      <img src="img/spring/momo-spring.png" alt="" class="on">
+      <img src="img/base/momo-full.png" alt="" class="on">
+      <img src="img/spring/momo-spring.png" alt="">
       <img src="img/summer/momo-summer.png" alt="">
       <img src="img/autumn/momo-autumn.png" alt="">
       <img src="img/winter/momo-winter.png" alt="">
@@ -45,7 +61,7 @@
   <section class="scene scene-hero on" id="home" aria-roledescription="carousel" aria-label="모모의 사계절">
     <div class="copy" id="copy" aria-live="polite">
       <div class="copy-head">
-        <h1 id="cName">봄</h1>
+        <h1 id="cName">모모</h1>
         <p class="say" id="cSay"></p>
       </div>
       <p class="desc" id="cDesc"></p>
@@ -57,10 +73,11 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4l8 8-8 8"/></svg>
     </button>
     <div class="dots" role="group" aria-label="계절 고르기">
-      <button class="dot" data-go="0" aria-pressed="true" aria-label="봄"></button>
-      <button class="dot" data-go="1" aria-pressed="false" aria-label="여름"></button>
-      <button class="dot" data-go="2" aria-pressed="false" aria-label="가을"></button>
-      <button class="dot" data-go="3" aria-pressed="false" aria-label="겨울"></button>
+      <button class="dot" data-go="0" aria-pressed="true" aria-label="기본 모모"></button>
+      <button class="dot" data-go="1" aria-pressed="false" aria-label="봄"></button>
+      <button class="dot" data-go="2" aria-pressed="false" aria-label="여름"></button>
+      <button class="dot" data-go="3" aria-pressed="false" aria-label="가을"></button>
+      <button class="dot" data-go="4" aria-pressed="false" aria-label="겨울"></button>
     </div>
   </section>
 
@@ -103,114 +120,44 @@
     </div>
   </section>
 
-  <!-- 장면 3: 갤러리 — 왼쪽 포즈 사진, 오른쪽 인스타그램 피드 (계절별로 한 줄씩 색 맞춤) -->
-  <section class="scene" id="gallery" aria-label="갤러리">
-    <div class="wrap gal-wrap">
-      <div>
-      <h2>모모의 사진첩</h2>
-      <p class="lead">사진첩도 피드도 지금 계절의 모모만. 첫 화면에서 계절을 바꾸면 여기도 같이 바뀝니다.</p>
-      <div class="gal">
-        <figure class="s-spring"><img src="img/spring/g-spring.jpg" alt="벚꽃 가지를 든 봄의 모모" loading="lazy"></figure>
-        <figure class="s-spring"><img src="img/spring/Spring%20cherry%20blossoms.png" alt="벚꽃 가지를 들고 앉은 봄의 모모" loading="lazy"></figure>
-        <figure class="s-spring"><img src="img/spring/Spring%20cherry%20blossoms2.png" alt="봄의 모모" loading="lazy"></figure>
-        <figure class="s-spring"><img src="img/spring/Spring%20cherry%20blossoms3.png" alt="봄의 모모" loading="lazy"></figure>
-        <figure class="s-summer"><img src="img/summer/g-summer.jpg" alt="수박바를 든 여름의 모모" loading="lazy"></figure>
-        <figure class="s-summer"><img src="img/summer/Summer%20watermelon.png" alt="수박바를 든 여름의 모모" loading="lazy"></figure>
-        <figure class="s-summer"><img src="img/summer/Summer%20watermelon2.png" alt="수박바를 먹는 여름의 모모" loading="lazy"></figure>
-        <figure class="s-summer"><img src="img/summer/Summer%20watermelon3.png" alt="여름의 모모" loading="lazy"></figure>
-        <figure class="s-autumn"><img src="img/autumn/g-autumn.jpg" alt="커피를 든 가을의 모모" loading="lazy"></figure>
-        <figure class="s-autumn"><img src="img/autumn/Autumn%20coffee.png" alt="커피를 든 가을의 모모" loading="lazy"></figure>
-        <figure class="s-autumn"><img src="img/autumn/Autumn%20coffee2.png" alt="가을의 모모" loading="lazy"></figure>
-        <figure class="s-autumn"><img src="img/autumn/Autumn%20coffee3.png" alt="가을의 모모" loading="lazy"></figure>
-        <figure class="s-winter"><img src="img/winter/g-winter.jpg" alt="선물을 든 겨울의 모모" loading="lazy"></figure>
-        <figure class="s-winter"><img src="img/winter/Winter%20gift.png" alt="선물을 든 겨울의 모모" loading="lazy"></figure>
-        <figure class="s-winter"><img src="img/winter/Winter%20gift2.png" alt="겨울의 모모" loading="lazy"></figure>
-        <figure class="s-winter"><img src="img/winter/Winter%20gift3.png" alt="선물을 안고 선 겨울의 모모" loading="lazy"></figure>
-      </div>
-      </div>
+</div>
 
-      <!-- 인스타그램 프로필 미리보기 (실제 계정 데이터가 아니라 사이트 이미지로 구성) -->
-      <aside class="ig" aria-label="인스타그램 @momo_bearstudio 미리보기">
-        <div class="ig-bar">
-          <b>momo_bearstudio</b>
-          <a href="https://www.instagram.com/momo_bearstudio" target="_blank" rel="noopener">인스타그램에서 보기</a>
-        </div>
-        <div class="ig-scroll">
-          <div class="ig-head">
-            <span class="ig-ring"><span class="mz mz-face" role="img" aria-label="모모 프로필 사진"></span></span>
-            <div class="ig-who">
-              <p class="ig-name">모모 | 계절 곰 인형 일상</p>
-              <p class="ig-meta"><b>15</b> 게시물</p>
-            </div>
-          </div>
-          <p class="ig-bio">계절마다 옷을 갈아입는 곰 인형, 모모의 하루.<br>봄 꽃잎부터 겨울 선물까지, 그 계절에만 하는 일을 올려요.</p>
-          <div class="ig-btns">
-            <a href="https://www.instagram.com/momo_bearstudio" target="_blank" rel="noopener" class="ig-follow">팔로우</a>
-            <a href="https://www.instagram.com/momo_bearstudio" target="_blank" rel="noopener">메시지</a>
-          </div>
-          <ul class="ig-hl">
-            <li><span style="--g:linear-gradient(135deg,#f6eee2,#e6d5bd)"><i class="mz mz-face"></i></span>모모 소개</li>
-            <li><span style="--g:linear-gradient(135deg,#f6eee2,#e6d5bd)"><img src="img/product_05.png" alt=""></span>굿즈</li>
-            <li><span style="--g:conic-gradient(#c4426f 0 25%,#1673c9 0 50%,#b44f1c 0 75%,#145640 0)"><i class="sp"></i></span>사계절</li>
-            <li><span style="--g:linear-gradient(135deg,#c4426f,#a8305a)"><b>DM</b></span>문의</li>
-          </ul>
-          <div class="ig-tab" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></div>
-
-          <div class="ig-grid">
-            <!-- 고정 3개: 소개 / 모모 / 굿즈 -->
-            <div class="row r-pin">
-              <div class="t txt pin"><b>안녕,<br>나는 모모야</b><small>사계절 곰 인형</small></div>
-              <div class="t pin"><span class="mz mz-body" role="img" aria-label="지금 계절 옷을 입은 모모"></span></div>
-              <div class="t pin"><img src="img/product_04.png" alt="모모 인형 굿즈" class="photo"><em>굿즈 5종</em></div>
-            </div>
-            <div class="row r-spring">
-              <div class="t txt"><b>봄</b><small>SPRING</small><span>벚꽃 보러<br>같이 갈래?</span></div>
-              <div class="t"><img src="img/spring/g-spring.jpg" alt="벚꽃 가지를 든 봄의 모모" class="photo"><button data-season-go="0" aria-label="첫 화면을 봄으로"></button></div>
-              <div class="t obj"><img src="img/spring/spring-0.png" alt=""><span>꽃잎 모으기</span></div>
-            </div>
-            <div class="row r-spring">
-              <div class="t"><img src="img/spring/Spring%20cherry%20blossoms.png" alt="벚꽃 가지를 들고 앉은 봄의 모모" class="photo" loading="lazy"></div>
-              <div class="t"><img src="img/spring/Spring%20cherry%20blossoms2.png" alt="봄의 모모 두 번째 사진" class="photo" loading="lazy"></div>
-              <div class="t"><img src="img/spring/Spring%20cherry%20blossoms3.png" alt="봄의 모모 세 번째 사진" class="photo" loading="lazy"></div>
-            </div>
-            <div class="row r-summer">
-              <div class="t txt"><b>여름</b><small>SUMMER</small><span>수박바는<br>양보 못 해</span></div>
-              <div class="t"><img src="img/summer/g-summer.jpg" alt="수박바를 든 여름의 모모" class="photo"><button data-season-go="1" aria-label="첫 화면을 여름으로"></button></div>
-              <div class="t obj"><img src="img/summer/summer-0.png" alt=""><span>녹기 전에 먹기</span></div>
-            </div>
-            <div class="row r-summer">
-              <div class="t"><img src="img/summer/Summer%20watermelon.png" alt="수박바를 든 여름의 모모" class="photo" loading="lazy"></div>
-              <div class="t"><img src="img/summer/Summer%20watermelon2.png" alt="수박바를 먹는 여름의 모모" class="photo" loading="lazy"></div>
-              <div class="t"><img src="img/summer/Summer%20watermelon3.png" alt="여름의 모모 세 번째 사진" class="photo" loading="lazy"></div>
-            </div>
-            <div class="row r-autumn">
-              <div class="t txt"><b>가을</b><small>AUTUMN</small><span>커피 들고<br>좀 걷자</span></div>
-              <div class="t"><img src="img/autumn/g-autumn.jpg" alt="커피를 든 가을의 모모" class="photo"><button data-season-go="2" aria-label="첫 화면을 가을로"></button></div>
-              <div class="t obj"><img src="img/autumn/autumn-0.png" alt=""><span>낙엽 밟기</span></div>
-            </div>
-            <div class="row r-autumn">
-              <div class="t"><img src="img/autumn/Autumn%20coffee.png" alt="커피를 든 가을의 모모" class="photo" loading="lazy"></div>
-              <div class="t"><img src="img/autumn/Autumn%20coffee2.png" alt="가을의 모모 두 번째 사진" class="photo" loading="lazy"></div>
-              <div class="t"><img src="img/autumn/Autumn%20coffee3.png" alt="가을의 모모 세 번째 사진" class="photo" loading="lazy"></div>
-            </div>
-            <div class="row r-winter">
-              <div class="t txt"><b>겨울</b><small>WINTER</small><span>네 선물도<br>준비했어</span></div>
-              <div class="t"><img src="img/winter/g-winter.jpg" alt="선물을 든 겨울의 모모" class="photo"><button data-season-go="3" aria-label="첫 화면을 겨울로"></button></div>
-              <div class="t obj"><img src="img/winter/winter-4.png" alt=""><span>선물 포장</span></div>
-            </div>
-            <div class="row r-winter">
-              <div class="t"><img src="img/winter/Winter%20gift.png" alt="선물을 든 겨울의 모모" class="photo" loading="lazy"></div>
-              <div class="t"><img src="img/winter/Winter%20gift2.png" alt="겨울의 모모 두 번째 사진" class="photo" loading="lazy"></div>
-              <div class="t"><img src="img/winter/Winter%20gift3.png" alt="선물을 안고 선 겨울의 모모" class="photo" loading="lazy"></div>
-            </div>
-          </div>
-        </div>
-      </aside>
+<!-- 인스타그램: 화면에 고정된 채 스크롤만큼 액자가 커지고, 뽀글 털이 화면을 덮은 뒤 사진 카드가 쏟아짐 -->
+<section class="insta" id="insta" aria-label="모모의 인스타그램 사진">
+  <div class="stage" id="stage">
+    <div class="fur-wrap" id="fur"><div class="fur"></div></div>
+    <div class="frame intro" id="intro">
+      <p id="introText">모모는 계절마다 그때만 할 수 있는 일을 하고, 그 하루를 사진으로 남겨요. 지금 계절의 모모를 꺼내 볼게요.</p>
     </div>
-  </section>
+    <p class="word" id="word" aria-hidden="true">momo</p>
+    <div class="cards" id="cards"></div>
+    <p class="hint" id="hint">카드를 집어서 테이블 위에서 옮겨 보세요</p>
+    <p class="keep" id="keep">계속 내려 보세요 <span aria-hidden="true">↓</span></p>
+  </div>
+</section>
 
-  <!-- 장면 4: 이야기 + 마무리 -->
-  <section class="scene" id="story" aria-label="모모의 한 해">
+<!-- 인스타그램 계정 카드 -->
+<section class="paper" aria-label="인스타그램 @momo_bearstudio">
+  <div class="ticket frame">
+    <div class="tk-who">
+      <p class="tk-id">@momo_bearstudio</p>
+      <h2>모모의 사계절 일기</h2>
+      <p class="tk-dia" aria-hidden="true"><i></i></p>
+      <p class="tk-meta">게시물 15 · 사계절</p>
+      <p class="tk-bio">계절마다 옷을 갈아입는 곰 인형, 모모의 하루.</p>
+      <a class="follow" href="https://www.instagram.com/momo_bearstudio" target="_blank" rel="noopener">인스타그램에서 보기</a>
+    </div>
+    <ul class="tk-list">
+      <li><button data-season-go="1"><b>봄</b><span>벚꽃 보러 같이 갈래?</span><small>꽃잎 모으기</small></button></li>
+      <li><button data-season-go="2"><b>여름</b><span>수박바는 양보 못 해.</span><small>녹기 전에 먹기</small></button></li>
+      <li><button data-season-go="3"><b>가을</b><span>커피 한 잔 들고 좀 걷자.</span><small>낙엽 밟기</small></button></li>
+      <li><button data-season-go="4"><b>겨울</b><span>네 선물도 준비했어.</span><small>선물 포장</small></button></li>
+    </ul>
+  </div>
+</section>
+
+  <!-- 이야기 + 마무리 -->
+  <section class="story" id="story" aria-label="모모의 한 해">
     <div class="wrap">
       <div class="story-grid">
         <div>
@@ -231,7 +178,7 @@
       </div>
     </div>
   </section>
-</main>
+<svg width="0" height="0" aria-hidden="true" style="position:absolute"><filter id="furf" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.035 0.035" numOctaves="3" seed="4"/><feDisplacementMap in="SourceGraphic" scale="90" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
 
 <script src="script.js"></script>
 </body>
